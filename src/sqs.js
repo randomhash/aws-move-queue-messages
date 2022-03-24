@@ -13,6 +13,13 @@ const createClient = (sqs) => {
     );
   });
 
+  const receiveMessage2 = QueueUrl => new Promise((resolve, reject) => {
+    sqs.receiveMessage(
+      { QueueUrl },
+      (error, data) => (error ? reject(error) : resolve(data)),
+    );
+  });
+
   const deleteMessage = (QueueUrl, ReceiptHandle) => new Promise((resolve, reject) => {
     sqs.deleteMessage(
       { QueueUrl, ReceiptHandle },
@@ -40,6 +47,9 @@ const createClient = (sqs) => {
     new Promise(async (resolve, reject) => {
       try {
         const receivedMessage = await receiveMessage(sourceQueueUrl);
+        const receivedMessage2 = await receiveMessage2(sourceQueueUrl);
+        console.log(receivedMessage)
+        console.log(receivedMessage2)
 
         if (!receivedMessage.Body || !receivedMessage.ReceiptHandle) {
           throw 'Queue is empty'; // eslint-disable-line
