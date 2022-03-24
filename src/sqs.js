@@ -9,7 +9,7 @@ const createClient = (sqs) => {
   const receiveMessage = QueueUrl => new Promise((resolve, reject) => {
     sqs.receiveMessage(
       { QueueUrl, AttributeNames: ['MessageDeduplicationId', 'MessageGroupId']},
-      (error, data) => (error ? reject(error) : resolve(data.Messages[0])),
+      (error, data) => (error ? reject(error) : resolve(data.Messages)),
     );
   });
 
@@ -39,7 +39,10 @@ const createClient = (sqs) => {
   const moveMessage = (sourceQueueUrl, targetQueueUrl) => (
     new Promise(async (resolve, reject) => {
       try {
-        const receivedMessage = await receiveMessage(sourceQueueUrl);
+        const d = await receiveMessage(sourceQueueUrl);
+        console.log(d)
+        const receivedMessage = d[0]
+
         console.log(receivedMessage.Attributes);
         console.log(`|||| Fetched ||||`);
 
