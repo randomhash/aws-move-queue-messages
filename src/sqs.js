@@ -41,7 +41,7 @@ const createClient = (sqs) => {
       try {
         const d = await receiveMessage(sourceQueueUrl);
         console.log(d)
-        const receivedMessage = d[0]
+        const receivedMessage = d[0];
 
         console.log(receivedMessage.Attributes);
         console.log(`|||| Fetched ||||`);
