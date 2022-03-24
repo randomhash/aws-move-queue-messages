@@ -39,8 +39,12 @@ const createClient = (sqs) => {
   const moveMessage = (sourceQueueUrl, targetQueueUrl) => (
     new Promise(async (resolve, reject) => {
       try {
+        console.log(`fetching message`)
         const d = await receiveMessage(sourceQueueUrl);
-        console.log(d)
+        console.log(`fetched`, Boolean(d));
+        if (!d) {
+          console.log('Rate limit');
+        }
         const receivedMessage = d[0];
 
         console.log(receivedMessage.Attributes);
