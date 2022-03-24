@@ -24,6 +24,7 @@
     "clui": "^0.3.6",
     "commander": "^2.20.0",
     "inquirer": "^6.2.0",
+    "lodash": "4.17.21",
     "minimist": "^1.2.0"
   },
   "devDependencies": {

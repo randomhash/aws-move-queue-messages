@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const { Spinner } = require('clui');
 
 const handle = async ({
@@ -37,14 +38,12 @@ const handle = async ({
   for (let i = 0; i < count; i += 1) {
     promises.push(sqs.moveMessage(sourceQueueUrl, targetQueueUrl, i));
   }
-
-  await Promise.all(promises).then(() => {
-    spinner.stop();
-  }).catch((e) => {
-    spinner.stop();
-    throw new Error(e.message);
-  });
-
+  const chunkSize = 300;
+  for (let i = 0; i < promises.length; i += chunkSize) {
+    const chunk = promises.slice(i, i + chunkSize);
+    await Promise.all(chunk);
+  }
+  spinner.stop();
   return count;
 };
 
