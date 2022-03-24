@@ -40,7 +40,6 @@ const createClient = (sqs) => {
     new Promise(async (resolve, reject) => {
       try {
         const receivedMessage = await receiveMessage(sourceQueueUrl);
-        console.log(receivedMessage)
 
         if (!receivedMessage.Body || !receivedMessage.ReceiptHandle || !receivedMessage.Attributes) {
           throw 'Queue is empty'; // eslint-disable-line
