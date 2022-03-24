@@ -1,6 +1,10 @@
 /* eslint-disable no-await-in-loop */
 const { Spinner } = require('clui');
 
+function sleep(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
 const handle = async ({
   sourceQueueUrl,
   targetQueueUrl,
@@ -42,6 +46,7 @@ const handle = async ({
   for (let i = 0; i < promises.length; i += chunkSize) {
     const chunk = promises.slice(i, i + chunkSize);
     await Promise.all(chunk);
+    await sleep(900);
   }
   spinner.stop();
   return count;

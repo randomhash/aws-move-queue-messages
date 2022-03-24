@@ -38,17 +38,10 @@ const createClient = (sqs) => {
     );
   });
 
-  function sleep(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
-  }
 
-  const moveMessage = (sourceQueueUrl, targetQueueUrl, count) => (
+  const moveMessage = (sourceQueueUrl, targetQueueUrl) => (
     new Promise(async (resolve, reject) => {
       try {
-        if (count) {
-          await sleep(4);
-        }
-
         console.log('fetching message');
         const d = await receiveMessage(sourceQueueUrl);
         console.log('fetched', Boolean(d));
