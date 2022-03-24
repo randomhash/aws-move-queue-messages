@@ -1,5 +1,6 @@
 const createClient = (sqs) => {
-  const sendMessage = (QueueUrl, MessageBody, MessageDeduplicationId, MessageGroupId) => new Promise((resolve, reject) => {
+  const sendMessage = (QueueUrl, MessageBody,
+    MessageDeduplicationId, MessageGroupId) => new Promise((resolve, reject) => {
     sqs.sendMessage(
       {
         QueueUrl, MessageBody, MessageDeduplicationId, MessageGroupId,
@@ -51,7 +52,9 @@ const createClient = (sqs) => {
         const receivedMessage = d[0];
 
 
-        if (!receivedMessage.Body || !receivedMessage.ReceiptHandle || !receivedMessage.Attributes) {
+        if (!receivedMessage.Body
+          || !receivedMessage.ReceiptHandle
+          || !receivedMessage.Attributes) {
           throw new Error('Queue is empty'); // eslint-disable-line
         }
 
