@@ -48,7 +48,7 @@ const handle = async ({
 
     const chunk = promises.slice(i, i + chunkSize);
     await Promise.all(chunk);
-    await sleep(900);
+    await sleep(1000);
   }
   spinner.stop();
   return count;
