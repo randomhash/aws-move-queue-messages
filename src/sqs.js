@@ -54,7 +54,7 @@ const createClient = (sqs) => {
         if (!receivedMessage.Body || !receivedMessage.ReceiptHandle) {
           throw 'Queue is empty'; // eslint-disable-line
         }
-
+        
         const { Body, ReceiptHandle } = receivedMessage;
 
         await sendMessage(targetQueueUrl, Body);
