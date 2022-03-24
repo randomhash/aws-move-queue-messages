@@ -12,13 +12,6 @@ const createClient = (sqs) => {
       (error, data) => (error ? reject(error) : resolve(data.Messages[0])),
     );
   });
-  
-  const receiveMessage2 = QueueUrl => new Promise((resolve, reject) => {
-    sqs.receiveMessage(
-      { QueueUrl },
-      (error, data) => (error ? reject(error) : resolve(data)),
-    );
-  });
 
   const deleteMessage = (QueueUrl, ReceiptHandle) => new Promise((resolve, reject) => {
     sqs.deleteMessage(
@@ -50,7 +43,6 @@ const createClient = (sqs) => {
         console.log(receivedMessage)
 
         if (!receivedMessage.Body || !receivedMessage.ReceiptHandle || !receivedMessage.Attributes) {
-          console.log('fail')
           throw 'Queue is empty'; // eslint-disable-line
         } 
         
@@ -58,7 +50,6 @@ const createClient = (sqs) => {
         const { Body, ReceiptHandle, Attributes} = receivedMessage;
         const {MessageDeduplicationId, MessageGroupId} = Attributes;
         if (!MessageDeduplicationId || !MessageGroupId) {
-          console.error('Somehow empty')
           throw 'Failure'
         }
         await sendMessage(targetQueueUrl, Body, MessageDeduplicationId, MessageGroupId);
