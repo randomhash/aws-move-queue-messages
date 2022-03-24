@@ -43,10 +43,10 @@ const createClient = (sqs) => {
   const moveMessage = (sourceQueueUrl, targetQueueUrl, count) => (
     new Promise(async (resolve, reject) => {
       try {
-
-        if (count % 1000 === 0) {
-          await sleep(2000)
+        if (count) {
+          await sleep(4)
         }
+
         console.log(`fetching message`)
         const d = await receiveMessage(sourceQueueUrl);
         console.log(`fetched`, Boolean(d));
@@ -66,9 +66,9 @@ const createClient = (sqs) => {
         if (!MessageDeduplicationId || !MessageGroupId) {
           throw 'Failure'
         }
+
         await sendMessage(targetQueueUrl, Body, MessageDeduplicationId, MessageGroupId);
         await deleteMessage(sourceQueueUrl, ReceiptHandle);
-
 
         resolve(ReceiptHandle);
       } catch (error) {
