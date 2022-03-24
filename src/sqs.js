@@ -9,7 +9,7 @@ const createClient = (sqs) => {
   const receiveMessage = QueueUrl => new Promise((resolve, reject) => {
     sqs.receiveMessage(
       { QueueUrl },
-      (error, data) => (error ? reject(error) : resolve(data.Messages[0])),
+      (error, data) => (error ? reject(error) : resolve(data.Messages)),
     );
   });
 
