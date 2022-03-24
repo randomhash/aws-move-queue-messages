@@ -44,6 +44,8 @@ const handle = async ({
   }
   const chunkSize = 300;
   for (let i = 0; i < promises.length; i += chunkSize) {
+    console.error(`${i} Sent`);
+
     const chunk = promises.slice(i, i + chunkSize);
     await Promise.all(chunk);
     await sleep(900);
