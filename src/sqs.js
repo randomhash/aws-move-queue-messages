@@ -1,14 +1,16 @@
 const createClient = (sqs) => {
   const sendMessage = (QueueUrl, MessageBody, MessageDeduplicationId, MessageGroupId) => new Promise((resolve, reject) => {
     sqs.sendMessage(
-      { QueueUrl, MessageBody, MessageDeduplicationId, MessageGroupId },
+      {
+        QueueUrl, MessageBody, MessageDeduplicationId, MessageGroupId,
+      },
       (error, data) => (error ? reject(error) : resolve(data)),
     );
   });
 
   const receiveMessage = QueueUrl => new Promise((resolve, reject) => {
     sqs.receiveMessage(
-      { QueueUrl, AttributeNames: ['MessageDeduplicationId', 'MessageGroupId']},
+      { QueueUrl, AttributeNames: ['MessageDeduplicationId', 'MessageGroupId'] },
       (error, data) => (error ? reject(error) : resolve(data.Messages)),
     );
   });
@@ -36,20 +38,20 @@ const createClient = (sqs) => {
     );
   });
 
-  function sleep (time) {
-    return new Promise((resolve) => setTimeout(resolve, time));
+  function sleep(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
   }
 
   const moveMessage = (sourceQueueUrl, targetQueueUrl, count) => (
     new Promise(async (resolve, reject) => {
       try {
         if (count) {
-          await sleep(4)
+          await sleep(4);
         }
 
-        console.log(`fetching message`)
+        console.log('fetching message');
         const d = await receiveMessage(sourceQueueUrl);
-        console.log(`fetched`, Boolean(d));
+        console.log('fetched', Boolean(d));
         if (!d) {
           console.log('Rate limit');
         }
@@ -57,14 +59,14 @@ const createClient = (sqs) => {
 
 
         if (!receivedMessage.Body || !receivedMessage.ReceiptHandle || !receivedMessage.Attributes) {
-          throw 'Queue is empty'; // eslint-disable-line
-        } 
-        
-        
-        const { Body, ReceiptHandle, Attributes} = receivedMessage;
-        const {MessageDeduplicationId, MessageGroupId} = Attributes;
+          throw new Error('Queue is empty'); // eslint-disable-line
+        }
+
+
+        const { Body, ReceiptHandle, Attributes } = receivedMessage;
+        const { MessageDeduplicationId, MessageGroupId } = Attributes;
         if (!MessageDeduplicationId || !MessageGroupId) {
-          throw 'Failure'
+          throw new Error('Failure');
         }
 
         await sendMessage(targetQueueUrl, Body, MessageDeduplicationId, MessageGroupId);
