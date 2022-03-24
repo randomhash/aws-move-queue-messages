@@ -34,8 +34,8 @@ const handle = async ({
 
   const promises = [];
 
-  for (let i = 0; i < count / 10; i += 1) {
-    promises.push(sqs.moveMessage(sourceQueueUrl, targetQueueUrl));
+  for (let i = 0; i < count; i += 1) {
+    promises.push(sqs.moveMessage(sourceQueueUrl, targetQueueUrl, counter));
   }
 
   await Promise.all(promises).then(() => {

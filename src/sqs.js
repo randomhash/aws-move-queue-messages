@@ -36,7 +36,11 @@ const createClient = (sqs) => {
     );
   });
 
-  const moveMessage = (sourceQueueUrl, targetQueueUrl) => (
+  function sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
+  const moveMessage = (sourceQueueUrl, targetQueueUrl, count) => (
     new Promise(async (resolve, reject) => {
       try {
         console.log(`fetching message`)
@@ -47,8 +51,6 @@ const createClient = (sqs) => {
         }
         const receivedMessage = d[0];
 
-        console.log(receivedMessage.Attributes);
-        console.log(`|||| Fetched ||||`);
 
         if (!receivedMessage.Body || !receivedMessage.ReceiptHandle || !receivedMessage.Attributes) {
           throw 'Queue is empty'; // eslint-disable-line
@@ -61,6 +63,9 @@ const createClient = (sqs) => {
           throw 'Failure'
         }
         await sendMessage(targetQueueUrl, Body, MessageDeduplicationId, MessageGroupId);
+        if (count % 1000 === 0) {
+          await sleep(2000)
+        }
         await deleteMessage(sourceQueueUrl, ReceiptHandle);
 
         resolve(ReceiptHandle);
