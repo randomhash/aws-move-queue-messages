@@ -1,5 +1,5 @@
 const createClient = (sqs) => {
-  const sendMessage = (QueueUrl, MessageBody) => new Promise((resolve, reject) => {
+  const sendMessage = (QueueUrl, MessageBody, MessageDeduplicationId, MessageGroupId) => new Promise((resolve, reject) => {
     sqs.sendMessage(
       { QueueUrl, MessageBody, MessageDeduplicationId, MessageGroupId },
       (error, data) => (error ? reject(error) : resolve(data)),
@@ -55,8 +55,12 @@ const createClient = (sqs) => {
         } 
         
         
-        const { Body, ReceiptHandle, Attributes: {MessageDeduplicationId, MessageGroupId}} = receivedMessage;
-
+        const { Body, ReceiptHandle, Attributes} = receivedMessage;
+        const {MessageDeduplicationId, MessageGroupId} = Attributes;
+        if (!MessageDeduplicationId || !MessageGroupId) {
+          console.error('Somehow empty')
+          throw 'Failure'
+        }
         await sendMessage(targetQueueUrl, Body, MessageDeduplicationId, MessageGroupId);
         await deleteMessage(sourceQueueUrl, ReceiptHandle);
 
