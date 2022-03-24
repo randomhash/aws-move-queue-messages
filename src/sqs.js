@@ -1,18 +1,18 @@
 const createClient = (sqs) => {
   const sendMessage = (QueueUrl, MessageBody) => new Promise((resolve, reject) => {
     sqs.sendMessage(
-      { QueueUrl, MessageBody },
+      { QueueUrl, MessageBody, MessageDeduplicationId, MessageGroupId },
       (error, data) => (error ? reject(error) : resolve(data)),
     );
   });
 
   const receiveMessage = QueueUrl => new Promise((resolve, reject) => {
     sqs.receiveMessage(
-      { QueueUrl },
-      (error, data) => (error ? reject(error) : resolve(data.Messages)),
+      { QueueUrl, AttributeNames: ['MessageDeduplicationId', 'MessageGroupId']},
+      (error, data) => (error ? reject(error) : resolve(data.Messages[0])),
     );
   });
-
+  
   const receiveMessage2 = QueueUrl => new Promise((resolve, reject) => {
     sqs.receiveMessage(
       { QueueUrl },
@@ -47,17 +47,17 @@ const createClient = (sqs) => {
     new Promise(async (resolve, reject) => {
       try {
         const receivedMessage = await receiveMessage(sourceQueueUrl);
-        const receivedMessage2 = await receiveMessage2(sourceQueueUrl);
         console.log(receivedMessage)
-        console.log(receivedMessage2)
 
-        if (!receivedMessage.Body || !receivedMessage.ReceiptHandle) {
+        if (!receivedMessage.Body || !receivedMessage.ReceiptHandle || !receivedMessage.MessageDeduplicationId || !receivedMessage.MessageGroupId) {
+          console.log('fail')
           throw 'Queue is empty'; // eslint-disable-line
-        }
+        } 
         
-        const { Body, ReceiptHandle } = receivedMessage;
+        
+        const { Body, ReceiptHandle, MessageDeduplicationId, MessageGroupId} = receivedMessage;
 
-        await sendMessage(targetQueueUrl, Body);
+        await sendMessage(targetQueueUrl, Body, MessageDeduplicationId, MessageGroupId);
         await deleteMessage(sourceQueueUrl, ReceiptHandle);
 
         resolve(ReceiptHandle);
