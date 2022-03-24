@@ -12,10 +12,6 @@
     "test:coverage": "yarn test --coverage",
     "validate": "npm-run-all --parallel lint test"
   },
-  "pre-push": {
-    "run": "validate",
-    "silent": true
-  },
   "bin": {
     "aws-move-queue-messages": "./src/index.js"
   },
