@@ -49,13 +49,13 @@ const createClient = (sqs) => {
         const receivedMessage = await receiveMessage(sourceQueueUrl);
         console.log(receivedMessage)
 
-        if (!receivedMessage.Body || !receivedMessage.ReceiptHandle || !receivedMessage.MessageDeduplicationId || !receivedMessage.MessageGroupId) {
+        if (!receivedMessage.Body || !receivedMessage.ReceiptHandle || !receivedMessage.Attributes) {
           console.log('fail')
           throw 'Queue is empty'; // eslint-disable-line
         } 
         
         
-        const { Body, ReceiptHandle, MessageDeduplicationId, MessageGroupId} = receivedMessage;
+        const { Body, ReceiptHandle, Attributes: {MessageDeduplicationId, MessageGroupId}} = receivedMessage;
 
         await sendMessage(targetQueueUrl, Body, MessageDeduplicationId, MessageGroupId);
         await deleteMessage(sourceQueueUrl, ReceiptHandle);
